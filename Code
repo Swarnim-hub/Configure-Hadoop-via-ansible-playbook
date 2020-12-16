@@ -1,0 +1,98 @@
+- hosts: namenode
+  vars_prompt:
+  - name: name_dir
+    prompt: "Enter  directory name"
+    private: no
+  - name: IP
+    prompt: "Enter Your IP:"
+    private: no
+  tasks:
+  - name: Copy jdk module
+    copy:
+      src: jdk-8u171-linux-x64.rpm
+      dest: /root/jdk-8u171-linux-x64.rpm
+  - name: install jdk packages
+    shell: "sudo rpm -ivh /root/jdk-8u171-linux-x64.rpm"
+    ignore_errors: True
+  - name: Copy Hadoop Module
+    copy:
+      src: hadoop-1.2.1-1.x86_64.rpm
+      dest: /root/hadoop-1.2.1-1.x86_64.rpm
+  - name: installing hadoop package
+    shell: "rpm -ivh /root/hadoop-1.2.1-1.x86_64.rpm --force"
+    ignore_errors: True
+  - name: Copy HDFS-site file
+    template:
+ src: hdfs-site.xml
+      dest: /etc/hadoop/hdfs-site.xml
+  - name: Copy Core-site file
+    template:
+      src: core-site.xml
+      dest: /etc/hadoop/core-site.xml
+  - name: Setting up your namenode directory
+    file:
+      path: "{{name_dir}}"
+      state: directory
+  - name: Creating directory...
+    file:
+      path: "/{{name_dir}}"
+      state: directory
+  - name: Setting up IP...
+    file:
+      path: "{{IP}}"
+      state: directory
+    ignore_errors: True
+  - name: Format Namenode directory...
+    shell: "hadoop namenode -format -force"
+    ignore_errors: True
+  - name: Starting Namenode Service...
+    shell: "hadoop-daemon.sh start namenode"
+    ignore_errors: True
+- hosts: datanode
+  vars_prompt:
+  - name: name_dir
+    prompt: "Enter  directory name"
+    private: no
+  - name: IP
+    prompt: "Enter Your IP:"
+    private: no
+  tasks:
+  - name: Copy jdk module
+    copy:
+      src: jdk-8u171-linux-x64.rpm
+      dest: /root/jdk-8u171-linux-x64.rpm
+  - name: install jdk packages
+    shell: " rpm -ivh /root/jdk-8u171-linux-x64.rpm"
+    ignore_errors: True
+  - name: Copy Hadoop Module
+    copy:
+      src: hadoop-1.2.1-1.x86_64.rpm
+      dest: /root/hadoop-1.2.1-1.x86_64.rpm
+  - name: installing hadoop package
+    shell: "rpm -ivh /root/hadoop-1.2.1-1.x86_64.rpm --force"
+    ignore_errors: True
+  - name: Copy HDFS-site file
+    template:
+src: hdfs-site.xml
+      dest: /etc/hadoop/hdfs-site.xml
+  - name: Copy Core-site file
+    template:
+      src: core-site.xml
+      dest: /etc/hadoop/core-site.xml
+  - name: Setting up your namenode directory
+    file:
+      path: "{{name_dir}}"
+      state: directory
+  - name: Creating directory...
+    file:
+      path: "/{{name_dir}}"
+      state: directory
+    ignore_errors: True
+  - name: Setting up IP...
+    file:
+      path: "{{IP}}"
+      state: directory
+    ignore_errors: True
+  - name: Starting Datanode Service...
+    shell: "hadoop-daemon.sh start datanode"
+    ignore_errors: True
